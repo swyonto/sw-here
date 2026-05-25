@@ -115,6 +115,72 @@ app.get('/api/download/:fileId', (req, res) => {
   fileStream.pipe(res);
 });
 
+// Route to show all current uploads metadata and physical files
+app.get('/api/uploads', (req, res) => {
+  try {
+    const files = fs.readdirSync(UPLOADS_DIR);
+    const fileDetails = files.map(filename => {
+      const filePath = path.join(UPLOADS_DIR, filename);
+      let stats;
+      try {
+        stats = fs.statSync(filePath);
+      } catch (e) {
+        return null;
+      }
+      
+      // Try to find matching metadata from the memory registry
+      const fileId = filename.split('.')[0];
+      const meta = uploadedFiles.get(fileId) || {};
+      
+      return {
+        filename,
+        originalName: meta.originalName || filename,
+        sizeBytes: stats.size,
+        sizeFormatted: `${(stats.size / 1024).toFixed(2)} KB`,
+        createdAt: meta.uploadedAt ? new Date(meta.uploadedAt) : stats.birthtime,
+        mimeType: meta.mimeType || 'application/octet-stream'
+      };
+    }).filter(Boolean);
+    
+    res.json({
+      success: true,
+      count: fileDetails.length,
+      memoryRegistryCount: uploadedFiles.size,
+      uploads: fileDetails
+    });
+  } catch (err) {
+    console.error('Failed to retrieve uploads:', err);
+    res.status(500).json({ error: 'Failed to retrieve uploads directory data.' });
+  }
+});
+
+// Route to clear the uploads directory and reset the memory registry (supports GET and POST)
+app.all('/api/uploads/clear', (req, res) => {
+  try {
+    const files = fs.readdirSync(UPLOADS_DIR);
+    let deletedCount = 0;
+    
+    for (const filename of files) {
+      const filePath = path.join(UPLOADS_DIR, filename);
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        fs.unlinkSync(filePath);
+        deletedCount++;
+      }
+    }
+    
+    uploadedFiles.clear();
+    
+    res.json({
+      success: true,
+      message: `Cleared uploads directory. Successfully deleted ${deletedCount} file(s).`,
+      deletedCount
+    });
+  } catch (err) {
+    console.error('Failed to clear uploads:', err);
+    res.status(500).json({ error: 'Failed to clear uploads directory.' });
+  }
+});
+
 // Periodic garbage collector: deletes files older than 10 minutes (600,000 ms)
 const FILE_LIFETIME_MS = 10 * 60 * 1000;
 setInterval(() => {
