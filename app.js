@@ -78,19 +78,28 @@ app.get('/', (req, res) => {
   res.render('index', { localIp: getLocalIpAddress() });
 });
 
-// Download route for the Windows Desktop App installer
+// ─── GitHub Release Download URL (update this when publishing a release) ──────
+const GITHUB_RELEASE_URL = 'https://github.com/swyonto/sw-here/releases/latest';
+const WINDOWS_INSTALLER_URL = `${GITHUB_RELEASE_URL}/download/SW-HERE-Setup.exe`;
+
+// About / Landing page
+app.get('/about', (req, res) => {
+  res.render('about', {
+    githubUrl: 'https://github.com/swyonto/sw-here',
+    downloadUrl: WINDOWS_INSTALLER_URL,
+    releaseUrl: GITHUB_RELEASE_URL,
+    version: '1.5.0'
+  });
+});
+
+// Download redirect — points to GitHub release installer
+app.get('/download', (req, res) => {
+  res.redirect(WINDOWS_INSTALLER_URL);
+});
+
+// Legacy local download route (fallback for local dev/electron)
 app.get('/download/windows', (req, res) => {
-  const fs = require('fs');
-  const installerPath = path.join(__dirname, 'dist', 'SW-HERE Setup 1.0.0.exe');
-  if (fs.existsSync(installerPath)) {
-    return res.download(installerPath, 'SW-HERE-Setup.exe');
-  } else {
-    const portablePath = path.join(__dirname, 'dist', 'SW-HERE 1.0.0.exe');
-    if (fs.existsSync(portablePath)) {
-      return res.download(portablePath, 'SW-HERE.exe');
-    }
-  }
-  return res.status(404).send('Windows app installer is currently being compiled on the server. Please check back in a moment!');
+  res.redirect(WINDOWS_INSTALLER_URL);
 });
 
 // Check if a session code is active

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SW-HERE | Share Files Instantly, Anywhere</title>
+  <meta name="description" content="SW-HERE is a hybrid P2P file sharing platform. Send files directly between devices over Wi-Fi or internet — no accounts, no limits, blazing fast.">
+  <link rel="icon" type="image/png" href="/images/sw-here-logo.png">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07070f;
+      --bg-card:   #0e0e1a;
+      --bg-card2:  #12121f;
+      --border:    rgba(255,255,255,0.07);
+      --border-hl: rgba(99,102,241,0.3);
+      --indigo:    #6366f1;
+      --indigo-lt: #818cf8;
+      --blue:      #3b82f6;
+      --teal:      #14b8a6;
+      --text:      #f1f5f9;
+      --text-muted:#94a3b8;
+      --text-dim:  #64748b;
+      --font-body: 'Inter', sans-serif;
+      --font-brand:'Outfit', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Navbar ─────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 48px;
+      background: rgba(7,7,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-brand);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-links a:hover { color: var(--text); transition: color 0.2s; }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: var(--font-brand);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.15);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--indigo);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--indigo-lt);
+      box-shadow: 0 0 30px rgba(99,102,241,0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .btn-lg {
+      padding: 13px 28px;
+      font-size: 0.9rem;
+      border-radius: 12px;
+    }
+
+    /* ── Hero ───────────────────────────────────── */
+    .hero {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 60px;
+      padding: 100px 48px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      min-height: 80vh;
+    }
+
+    .hero-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .hero-glow::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-glow::after {
+      content: '';
+      position: absolute;
+      top: 100px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(20,184,166,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-left {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.25);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--indigo-lt);
+      margin-bottom: 28px;
+    }
+
+    .hero-badge span {
+      width: 6px;
+      height: 6px;
+      background: var(--indigo-lt);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--indigo-lt);
+    }
+
+    .hero-title {
+      font-family: var(--font-brand);
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    .hero-title .hl {
+      background: linear-gradient(135deg, var(--indigo-lt), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 52px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 36px;
+    }
+
+    .stat-item .stat-num {
+      font-family: var(--font-brand);
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-item .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* ── Hero Visual ────────────────────────────── */
+    .hero-right {
+      flex: 0 0 380px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-device {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(99,102,241,0.08);
+    }
+
+    .device-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red   { background: #ef4444; }
+    .dot-yellow{ background: #eab308; }
+    .dot-green { background: #22c55e; }
+
+    .device-bar span {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+    }
+
+    .device-transfer {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .device-transfer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .device-transfer-header span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .badge-p2p {
+      background: rgba(20,184,166,0.15);
+      border: 1px solid rgba(20,184,166,0.3);
+      color: var(--teal);
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .device-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .file-icon-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(99,102,241,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--indigo-lt);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .device-file-info { flex: 1; }
+    .device-file-info .fname { font-size: 0.72rem; font-weight: 600; color: var(--text); }
+    .device-file-info .fsize { font-size: 0.62rem; color: var(--text-dim); }
+
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      height: 3px;
+      margin-top: 12px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--indigo), var(--teal));
+      width: 72%;
+    }
+
+    .device-pin-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 14px;
+    }
+
+    .pin-label { font-size: 0.65rem; color: var(--text-dim); font-weight: 600; letter-spacing: 0.5px; }
+    .pin-digits { display: flex; gap: 5px; }
+    .pin-digit {
+      width: 26px;
+      height: 30px;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-brand);
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--indigo-lt);
+    }
+
+    /* ── Section Shared ─────────────────────────── */
+    .section {
+      padding: 90px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--indigo-lt);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-brand);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+
+    .section-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 52px;
+    }
+
+    /* ── Feature Cards ──────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px 24px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(99,102,241,0.2);
+      background: var(--bg-card2);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--indigo-lt);
+      margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+      font-family: var(--font-brand);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .feature-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── Download Section ───────────────────────── */
+    .download-section {
+      padding: 90px 48px;
+    }
+
+    .download-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 60px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-inner::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .download-text { position: relative; z-index: 1; }
+
+    .download-text h2 {
+      font-family: var(--font-brand);
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .download-text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 420px;
+      line-height: 1.65;
+    }
+
+    .download-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    .download-btn-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--indigo);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-family: var(--font-brand);
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 0.2s;
+      box-shadow: 0 0 30px rgba(99,102,241,0.35);
+      text-decoration: none;
+    }
+
+    .download-btn-main:hover {
+      background: var(--indigo-lt);
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(99,102,241,0.5);
+    }
+
+    .download-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    /* ── About / Developer Card ─────────────────── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 0;
+    }
+
+    .about-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px 24px;
+    }
+
+    .about-card h3 {
+      font-family: var(--font-brand);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .about-card p {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .about-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .about-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .about-link:hover {
+      border-color: rgba(255,255,255,0.15);
+      color: var(--text);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .tech-tag {
+      padding: 4px 12px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--indigo-lt);
+    }
+
+    /* ── Footer ─────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-brand);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .footer-brand img {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ── Responsive ─────────────────────────────── */
+    @media (max-width: 900px) {
+      .nav { padding: 12px 20px; }
+      .nav-links { display: none; }
+      .hero { flex-direction: column; padding: 60px 20px 50px; gap: 40px; min-height: auto; }
+      .hero-right { flex: auto; width: 100%; }
+      .section { padding: 60px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .download-inner { flex-direction: column; padding: 40px 24px; text-align: center; }
+      .footer { padding: 30px 20px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ──────────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <img src="/images/sw-here-logo.png" alt="SW-HERE Logo">
+      SW-HERE
+    </div>
+
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="#about">About</a>
+      <a href="<%= githubUrl %>" target="_blank">GitHub</a>
+    </div>
+
+    <div class="nav-actions">
+      <a href="<%= githubUrl %>" target="_blank" class="btn btn-ghost">
+        <i class="fa-brands fa-github"></i> GitHub
+      </a>
+      <a href="/" class="btn btn-primary">
+        <i class="fa-solid fa-arrow-right"></i> Open App
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span></span> Free &amp; Works Offline
+      </div>
+
+      <h1 class="hero-title">
+        Share Files.<br>
+        <span class="hl">Instantly.</span>
+      </h1>
+
+      <p class="hero-desc">
+        Send files directly between devices using WebRTC P2P — no accounts, no upload limits, no cloud middleman. Works over Wi-Fi hotspot completely offline.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#download" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-download"></i> Download for Windows
+        </a>
+        <a href="/" class="btn btn-outline btn-lg">
+          <i class="fa-solid fa-globe"></i> Open in Browser
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">P2P</div>
+          <div class="stat-label">Direct Transfer</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Accounts Needed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">v<%= version %></div>
+          <div class="stat-label">Latest Version</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-device">
+        <div class="device-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span>SW-HERE — Active Session</span>
+        </div>
+
+        <div class="device-transfer">
+          <div class="device-transfer-header">
+            <span>Transferring 3 files</span>
+            <span class="badge-p2p">P2P DIRECT</span>
+          </div>
+
+          <div class="device-file">
+            <div class="file-icon-circle"><i class="fa-solid fa-file-video"></i></div>
+            <div class="device-file-info">
+              <div class="fname">project-demo.mp4</div>
+              <div class="fsize">142 MB — Streaming...</div>
+            </div>
+          </div>
+
+          <div class="device-file">
+            <div class="file-icon-circle"><i class="fa-solid fa-file-zipper"></i></div>
+            <div class="device-file-info">
+              <div class="fname">assets.zip</div>
+              <div class="fsize">38 MB — Queued</div>
+            </div>
+          </div>
+
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill"></div>
+          </div>
+        </div>
+
+        <div class="device-pin-row">
+          <span class="pin-label">ROOM PIN</span>
+          <div class="pin-digits">
+            <div class="pin-digit">4</div>
+            <div class="pin-digit">7</div>
+            <div class="pin-digit">2</div>
+            <div class="pin-digit">1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ────────────────────────────────── -->
+  <section class="section" id="features">
+    <div class="section-label"><i class="fa-solid fa-bolt"></i> What Makes It Different</div>
+    <h2 class="section-title">Built for Speed. Built for Privacy.</h2>
+    <p class="section-desc">No sign-ups, no cloud storage, no size limits. Just pure peer-to-peer transfer that works the way you'd expect.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon-box"><i class="fa-solid fa-bolt"></i></div>
+        <h3>WebRTC P2P Direct</h3>
+        <p>Files go directly from device to device at full network speeds using WebRTC data channels. No middleman server touching your data.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box"><i class="fa-solid fa-wifi"></i></div>
+        <h3>100% Offline Ready</h3>
+        <p>Works without internet. Create a Wi-Fi hotspot from your laptop, connect your phone, and transfer at full local speeds — no cloud required.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <h3>Smart Cloud Fallback</h3>
+        <p>When P2P fails due to NAT restrictions, automatically routes through an encrypted HTTP relay so transfers always succeed.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box"><i class="fa-solid fa-arrows-left-right"></i></div>
+        <h3>Bidirectional Sharing</h3>
+        <p>Both sides can send and receive simultaneously in the same session. One 4-digit PIN, persistent open channel.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box"><i class="fa-solid fa-desktop"></i></div>
+        <h3>Native Desktop App</h3>
+        <p>Download the Windows app for a native experience with system tray, offline server, and no browser required.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box"><i class="fa-solid fa-key"></i></div>
+        <h3>No Account. Ever.</h3>
+        <p>Zero registration. Share a 4-digit PIN — your peer scans the QR code or types it in. That's the entire setup process.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Download ─────────────────────────────────── -->
+  <section class="download-section" id="download">
+    <div class="download-inner">
+      <div class="download-text">
+        <h2>Get SW-HERE for Windows</h2>
+        <p>Download the native desktop app to share files offline via Wi-Fi hotspot. Includes a built-in server, system tray, and works without a browser.</p>
+      </div>
+      <div class="download-actions">
+        <a href="<%= downloadUrl %>" class="download-btn-main">
+          <i class="fa-brands fa-windows"></i>
+          Download for Windows
+          <i class="fa-solid fa-arrow-down"></i>
+        </a>
+        <div class="download-meta">
+          <i class="fa-solid fa-tag"></i>
+          Version <%= version %> &nbsp;·&nbsp;
+          <a href="<%= releaseUrl %>" target="_blank" style="color: inherit; text-decoration: underline;">All Releases</a>
+        </div>
+        <div class="download-meta">
+          <i class="fa-solid fa-globe"></i>
+          Or just <a href="/" style="color: var(--indigo-lt);">open in your browser</a> — no install needed
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── About ────────────────────────────────────── -->
+  <section class="section" id="about">
+    <div class="section-label"><i class="fa-solid fa-circle-info"></i> About This Project</div>
+    <h2 class="section-title">Open Source. Built with ❤️</h2>
+    <p class="section-desc">SW-HERE is an open-source hybrid file sharing platform built with Node.js, WebRTC, and Electron.</p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <h3><i class="fa-brands fa-github" style="margin-right:8px;color:var(--indigo-lt)"></i> Repository</h3>
+        <p>The full source code is available on GitHub. Contributions, issues, and feature requests are welcome.</p>
+        <div class="about-links">
+          <a href="<%= githubUrl %>" target="_blank" class="about-link">
+            <i class="fa-brands fa-github"></i> swyonto/sw-here
+          </a>
+          <a href="<%= releaseUrl %>" target="_blank" class="about-link">
+            <i class="fa-solid fa-tag"></i> Releases
+          </a>
+          <a href="<%= githubUrl %>/issues" target="_blank" class="about-link">
+            <i class="fa-solid fa-bug"></i> Report Issue
+          </a>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <h3><i class="fa-solid fa-code" style="margin-right:8px;color:var(--indigo-lt)"></i> Tech Stack</h3>
+        <p>Built on modern, battle-tested open-source technologies for maximum performance and reliability.</p>
+        <div class="tech-tags">
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">Express</span>
+          <span class="tech-tag">Socket.IO</span>
+          <span class="tech-tag">WebRTC</span>
+          <span class="tech-tag">Electron</span>
+          <span class="tech-tag">EJS</span>
+          <span class="tech-tag">Multer</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <h3><i class="fa-solid fa-user" style="margin-right:8px;color:var(--indigo-lt)"></i> Developer</h3>
+        <p>Built by <strong style="color:#fff">Suraj</strong> (swyonto) — a solo developer passionate about building useful offline-first tools.</p>
+        <div class="about-links">
+          <a href="https://github.com/swyonto" target="_blank" class="about-link">
+            <i class="fa-brands fa-github"></i> @swyonto
+          </a>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <h3><i class="fa-solid fa-scale-balanced" style="margin-right:8px;color:var(--indigo-lt)"></i> License &amp; Usage</h3>
+        <p>SW-HERE is free and open source. Feel free to use, fork, and contribute. No warranties provided.</p>
+        <div class="about-links">
+          <a href="<%= githubUrl %>/blob/main/LICENSE" target="_blank" class="about-link">
+            <i class="fa-solid fa-file-lines"></i> ISC License
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="/images/sw-here-logo.png" alt="SW-HERE">
+        SW-HERE
+        <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;margin-left:4px">v<%= version %></span>
+      </div>
+
+      <div class="footer-copy">
+        © 2026 SW-HERE by swyonto. Open source under ISC.
+      </div>
+
+      <div class="footer-links">
+        <a href="/">App</a>
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+        <a href="<%= githubUrl %>" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
