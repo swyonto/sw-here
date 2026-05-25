@@ -220,7 +220,11 @@
               
               <p class="pin-error-hint hidden" id="pin-error-text">Invalid pairing pin. Try again.</p>
 
-              <button type="button" class="btn-primary btn-glow w-full mt-lg" id="join-session-btn">
+              <button type="button" class="btn-qr-scan w-full" id="open-qr-scanner-btn" title="Scan QR Code with Camera">
+                <i class="fa-solid fa-camera"></i> Scan QR Code
+              </button>
+
+              <button type="button" class="btn-primary btn-glow w-full mt-md" id="join-session-btn">
                 <i class="fa-solid fa-link"></i> Establish Connection
               </button>
             </div>
@@ -406,6 +410,24 @@
       </div>
     </div>
 
+    <!-- Pairing QR Code Scanner Modal Overlay -->
+    <div class="history-drawer-backdrop" id="qr-scanner-backdrop"></div>
+    <div class="dashboard-card hidden" id="qr-scanner-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1005; width: 90%; max-width: 440px; box-shadow: var(--glass-shadow); padding: 24px;">
+      <h2 class="section-title text-teal" style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-qrcode"></i> Scan Pairing QR Code</h2>
+      <p class="section-subtitle">Align the QR code on the sending device inside the camera frame.</p>
+
+      <div class="scanner-preview-box" style="position: relative; width: 100%; height: 260px; background: rgba(0,0,0,0.4); border-radius: var(--border-radius-md); overflow: hidden; border: 1px solid rgba(255,255,255,0.08); margin: 16px 0;">
+        <div id="qr-reader" style="width: 100%; height: 100%; border: none;"></div>
+        <div class="scanner-laser" style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, transparent, var(--accent-teal, #14b8a6), transparent); box-shadow: 0 0 8px var(--accent-teal, #14b8a6); animation: scanLaser 2s linear infinite; z-index: 10; pointer-events: none;"></div>
+      </div>
+
+      <div class="proposed-decisions" style="display: flex; gap: 12px; margin-top: 10px;">
+        <button type="button" class="btn-danger w-full" id="close-qr-scanner-btn">
+          <i class="fa-solid fa-xmark"></i> Cancel Scan
+        </button>
+      </div>
+    </div>
+
     <!-- Universal Transfer HUD Dialog Modal Overlay -->
     <div class="history-drawer-backdrop" id="hud-backdrop"></div>
     <div class="dashboard-card hidden" id="transfer-hud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1010; width: 90%; max-width: 440px; box-shadow: var(--glass-shadow); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);">
@@ -475,6 +497,8 @@
   <script>
     window.localServerIp = "<%= localIp %>";
   </script>
+  <!-- HTML5 QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <!-- Main Application Logic Script -->
   <script src="/js/script.js"></script>
 </body>

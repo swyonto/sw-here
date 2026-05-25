@@ -86,11 +86,18 @@
   
   const toastContainer = document.getElementById('toast-container');
 
+  // QR Code Scanner DOM Elements
+  const openQrScannerBtn = document.getElementById('open-qr-scanner-btn');
+  const closeQrScannerBtn = document.getElementById('close-qr-scanner-btn');
+  const qrScannerModal = document.getElementById('qr-scanner-modal');
+  const qrScannerBackdrop = document.getElementById('qr-scanner-backdrop');
+
   // Application State Variables
   let socket = null;
   let stagedFiles = []; // { file, id, relativePath }
   let activePin = null;
   let isSender = false;
+  let html5QrCode = null;
   let activeTab = 'send'; // 'send' or 'receive'
   let inRoomMode = false;
   
@@ -605,6 +612,13 @@
     pinInputs[pinInputs.length - 1].addEventListener('keyup', (e) => {
       if (e.key === 'Enter') initiateReceiverJoin();
     });
+
+    if (openQrScannerBtn) {
+      openQrScannerBtn.addEventListener('click', startQRScanner);
+    }
+    if (closeQrScannerBtn) {
+      closeQrScannerBtn.addEventListener('click', closeQRScanner);
+    }
   }
 
   /* ==========================================================================
@@ -1468,6 +1482,87 @@
       transferHud.classList.add('hidden');
       if (hudBackdrop) hudBackdrop.classList.remove('active');
     }, 2500);
+  }
+
+  /* ==========================================================================
+     INTEGRATED QR CODE SCANNER CONTROLLER
+     ========================================================================== */
+  
+  function startQRScanner() {
+    qrScannerBackdrop.classList.add('active');
+    qrScannerModal.classList.remove('hidden');
+    
+    // Initialize html5QrCode scanner instance
+    try {
+      html5QrCode = new Html5QrCode("qr-reader");
+      const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          console.log(`[QR Scanner] Decoded value: ${decodedText}`);
+          let pin = "";
+          try {
+            const url = new URL(decodedText);
+            pin = url.searchParams.get("pin");
+          } catch (e) {
+            if (/^\d{4}$/.test(decodedText.trim())) {
+              pin = decodedText.trim();
+            }
+          }
+
+          if (pin && pin.length === 4) {
+            showToast("QR Code Scanned", `Pairing code ${pin} successfully detected!`, "success");
+            
+            for (let i = 0; i < 4; i++) {
+              const field = document.getElementById(`p-${i+1}`);
+              if (field) field.value = pin[i];
+            }
+            
+            closeQRScanner();
+            initiateReceiverJoin();
+          } else {
+            showToast("Scanning Alert", "Invalid QR code format. Please scan a valid SW-HERE QR code.", "warning");
+          }
+        },
+        (errorMessage) => {
+          // Silent scan feedback loop warnings
+        }
+      ).catch(err => {
+        console.error("[QR Scanner] Camera start failure:", err);
+        showToast("Camera Access Error", "Unable to start camera. Please verify permissions.", "error");
+        closeQRScanner();
+      });
+    } catch (e) {
+      console.error("[QR Scanner] Initialization error:", e);
+      showToast("Scanner Error", "Failed to initialize scanner. Please try again.", "error");
+      closeQRScanner();
+    }
+  }
+
+  function closeQRScanner() {
+    if (html5QrCode) {
+      try {
+        html5QrCode.stop().then(() => {
+          html5QrCode = null;
+          qrScannerModal.classList.add('hidden');
+          qrScannerBackdrop.classList.remove('active');
+        }).catch(err => {
+          console.error("[QR Scanner] Error stopping scanner:", err);
+          html5QrCode = null;
+          qrScannerModal.classList.add('hidden');
+          qrScannerBackdrop.classList.remove('active');
+        });
+      } catch (e) {
+        html5QrCode = null;
+        qrScannerModal.classList.add('hidden');
+        qrScannerBackdrop.classList.remove('active');
+      }
+    } else {
+      qrScannerModal.classList.add('hidden');
+      qrScannerBackdrop.classList.remove('active');
+    }
   }
 
   function cleanupWebRTC() {

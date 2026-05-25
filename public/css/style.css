@@ -169,12 +169,15 @@ body *,
   border: 1px solid rgba(255, 255, 255, 0.08); /* Sleek micro-border */
   border-radius: 20px; /* Highly rounded pill corners */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  -webkit-app-region: drag; /* Make custom titlebar draggable */
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  -webkit-app-region: no-drag; /* Allow clicks inside custom titlebar */
+  cursor: pointer;
 }
 
 .brand-logo {
@@ -220,6 +223,7 @@ body *,
   display: flex;
   align-items: center;
   gap: 12px;
+  -webkit-app-region: no-drag; /* Allow clicking buttons inside titlebar overlay */
 }
 
 .icon-btn-premium {
@@ -1910,3 +1914,61 @@ input:checked + .switch-slider::before {
 body.light-mode .switch-slider {
   background-color: rgba(0, 0, 0, 0.03);
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Pairing QR Scanner UI Additions
+   ────────────────────────────────────────────────────────────────────────── */
+.btn-qr-scan {
+  background: rgba(59, 130, 246, 0.08);
+  color: #60a5fa;
+  border: 1px dashed rgba(59, 130, 246, 0.35);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 11px 20px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  transition: var(--transition-normal);
+  margin-top: 14px;
+}
+
+.btn-qr-scan:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-qr-scan:active {
+  transform: translateY(0);
+}
+
+body.light-mode .btn-qr-scan {
+  background: rgba(37, 99, 235, 0.05);
+  color: #2563eb;
+  border: 1px dashed rgba(37, 99, 235, 0.3);
+}
+
+body.light-mode .btn-qr-scan:hover {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.15);
+}
+
+#qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: var(--border-radius-md) !important;
+}
+
+@keyframes scanLaser {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
