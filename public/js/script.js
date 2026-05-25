@@ -324,6 +324,10 @@
     });
     
     generateCodeBtn.addEventListener('click', initiateSenderSession);
+    const instantRoomBtn = document.getElementById('instant-room-btn');
+    if (instantRoomBtn) {
+      instantRoomBtn.addEventListener('click', initiateSenderSession);
+    }
   }
 
   function setupDragAndDropEvents(zone, dropCallback) {
@@ -636,8 +640,6 @@
 
   // 1. SENDER: Generated Pairing Pin
   function initiateSenderSession() {
-    if (stagedFiles.length === 0) return;
-    
     isSender = true;
     establishSocket();
     

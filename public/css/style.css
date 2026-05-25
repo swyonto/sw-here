@@ -185,10 +185,10 @@ body *,
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  padding: 2px; /* Gradient Ring Thickness */
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-  flex-shrink: 0; /* CRITICAL: Prevent circular shape from getting oval on tiny viewports */
+  padding: 1px; /* Thin outline */
+  background: rgba(255, 255, 255, 0.25); /* Thin elegant white border */
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+  flex-shrink: 0; /* Prevent circular shape from getting oval */
 }
 
 .brand-logo-img {
@@ -1643,6 +1643,11 @@ body.light-mode ::-webkit-scrollbar-thumb:hover {
 body.light-mode .app-header {
   background: rgba(255, 255, 255, 0.6);
   box-shadow: 0 4px 30px rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .brand-logo {
+  background: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 0 8px rgba(15, 23, 42, 0.03) !important;
 }
 
 body.light-mode .icon-btn-premium {
