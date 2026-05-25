@@ -12,6 +12,10 @@ let mainWindow = null;
 let tray = null;
 app.isQuitting = false;
 
+// Dynamically select the native icon format (.ico for Windows, .png for other OS)
+const iconExt = process.platform === 'win32' ? 'ico' : 'png';
+const appIconPath = path.join(__dirname, `public/images/sw-here-logo.${iconExt}`);
+
 // Handle uncaught exceptions gracefully (e.g. port already in use)
 process.on('uncaughtException', (err) => {
   if (err.code === 'EADDRINUSE') {
@@ -40,7 +44,7 @@ function createWindow() {
     minWidth: 420,
     minHeight: 600,
     resizable: true,
-    icon: path.join(__dirname, 'public/images/sw-here-logo.png'),
+    icon: appIconPath,
     backgroundColor: '#09090b', // Zinc-950 dark background color
     title: 'SW-HERE | Hybrid P2P sharing',
     webPreferences: {
@@ -63,7 +67,7 @@ function createWindow() {
         const notification = new Notification({
           title: 'SW-HERE',
           body: 'Application minimized to system tray and is still active.',
-          icon: path.join(__dirname, 'public/images/sw-here-logo.png'),
+          icon: appIconPath,
           silent: true
         });
         notification.show();
@@ -78,8 +82,7 @@ function createWindow() {
 }
 
 function createTray() {
-  const iconPath = path.join(__dirname, 'public/images/sw-here-logo.png');
-  tray = new Tray(iconPath);
+  tray = new Tray(appIconPath);
 
   const contextMenu = Menu.buildFromTemplate([
     {
