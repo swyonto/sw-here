@@ -62,6 +62,7 @@
   
   // Transfer HUD Elements
   const transferHud = document.getElementById('transfer-hud');
+  const hudBackdrop = document.getElementById('hud-backdrop');
   const hudActivePeer = document.getElementById('hud-active-peer');
   const hudMethodBadge = document.getElementById('hud-method-badge');
   const hudCircleFill = document.getElementById('hud-circle-fill');
@@ -133,9 +134,44 @@
     // Check for query parameter PIN code for auto-connect accessibility
     checkUrlPinCode();
     
+    // Theme switcher setup
+    setupThemeSwitcher();
+    
     window.addEventListener('beforeunload', cleanupAllConnections);
   }
 
+  // Theme Switcher Controller
+  function setupThemeSwitcher() {
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (!themeToggleBtn) return;
+    
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('sw-here-theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+      themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+    } else {
+      document.body.classList.remove('light-mode');
+      themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+    }
+    
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      
+      if (isLight) {
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        localStorage.setItem('sw-here-theme', 'light');
+        showToast('Light Theme', 'Switched to clean glassy light mode.', 'info');
+      } else {
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        localStorage.setItem('sw-here-theme', 'dark');
+        showToast('Dark Theme', 'Switched to premium glassy dark mode.', 'info');
+      }
+    });
+  }
+
+  // Check query parameter PIN code for auto-connect accessibility
   function checkUrlPinCode() {
     const urlParams = new URLSearchParams(window.location.search);
     const pinFromUrl = urlParams.get('pin');
@@ -248,6 +284,7 @@
     // Room and HUD reset
     paneRoomHub.classList.remove('active');
     transferHud.classList.add('hidden');
+    if (hudBackdrop) hudBackdrop.classList.remove('active');
     proposalModal.classList.add('hidden');
     proposalBackdrop.classList.remove('active');
     
@@ -614,8 +651,8 @@
       qrcodeContainer.innerHTML = '';
       const qrImg = document.createElement('img');
       const pairingUrl = `${window.location.origin}/?pin=${pin}`;
-      const qrColor = '6366f1'; // electric indigo theme
-      const qrBgColor = '0d1426'; // dark slate theme
+      const qrColor = '3b82f6'; // Shadcn Blue theme (royal blue color)
+      const qrBgColor = '09090b'; // Matching pure black bg
       qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(pairingUrl)}&color=${qrColor}&bgcolor=${qrBgColor}&margin=8`;
       qrImg.alt = 'QR Code';
       qrImg.style.width = '100%';
@@ -652,7 +689,7 @@
 
     // Sockets backup proposal fallback channel
     socket.on('transfer-proposal-fallback', ({ files }) => {
-      handleIncomingProposal(files, true);
+      handleIncomingFallbackProposal(files);
     });
 
     socket.on('fallback-links', ({ files }) => {
@@ -707,7 +744,7 @@
     });
 
     socket.on('transfer-proposal-fallback', ({ files }) => {
-      handleIncomingProposal(files, true);
+      handleIncomingFallbackProposal(files);
     });
 
     socket.on('fallback-links', ({ files }) => {
@@ -724,6 +761,17 @@
         }
       }
     });
+  }
+
+  function handleIncomingFallbackProposal(files) {
+    const autoAccept = document.getElementById('auto-accept-toggle').checked;
+    if (autoAccept) {
+      // Auto-approve fallback transfer
+      socket.emit('transfer-status', { pin: activePin, status: 'accepted' });
+      showToast('Streaming Started', 'Incoming transfer approved automatically.', 'success');
+    } else {
+      handleIncomingProposal(files, true);
+    }
   }
 
   /* ==========================================================================
@@ -792,10 +840,10 @@
               .catch(err => console.error('[WebRTC] Answer Generation error:', err));
           }
         })
-        .catch(err => console.error('[WebRTC] SDP loading failed:', err));
+        .catch(err => console.error('[WebRTC] Remote SDP set failed:', err));
     } else if (data.candidate) {
       peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
-        .catch(err => console.error('[WebRTC] ICE candidate load failed:', err));
+        .catch(err => console.error('[WebRTC] Candidate registration failed:', err));
     }
   }
 
@@ -884,9 +932,7 @@
         pin: activePin,
         data: { fallbackProposal: true, files: activeFilesMetadata }
       });
-      // Receiver listens to signal
       showToast('Upload Commenced', 'Packaging files for Cloud Fallback delivery...', 'info');
-      // Begin standard server upload automatically
       uploadStagedFilesForFallback();
     }
   }
@@ -988,7 +1034,6 @@
       
       if (isFallback) {
         socket.emit('transfer-status', { pin: activePin, status: 'accepted' });
-        // Handled via separate fallback trigger
       } else {
         dataChannel.send(JSON.stringify({ type: 'approve-transfer', status: 'accepted' }));
         prepareTransferHUD(false, totalBytes);
@@ -1017,7 +1062,18 @@
       
       // 1. Receive incoming transfer proposals
       if (msg.type === 'propose-transfer') {
-        handleIncomingProposal(msg.files, false);
+        const autoAccept = document.getElementById('auto-accept-toggle').checked;
+        if (autoAccept) {
+          // Bypasses confirmation modal and approves immediately!
+          dataChannel.send(JSON.stringify({ type: 'approve-transfer', status: 'accepted' }));
+          
+          let totalBytes = msg.files.reduce((acc, f) => acc + f.size, 0);
+          activeFilesMetadata = msg.files;
+          prepareTransferHUD(false, totalBytes);
+          showToast('Streaming Started', 'Incoming transfer approved automatically.', 'success');
+        } else {
+          handleIncomingProposal(msg.files, false);
+        }
       }
       
       // 2. Receive incoming transfer decisions (Sender side)
@@ -1092,37 +1148,6 @@
     }
   }
 
-  // Handle Socket remote signals for Fallbacks
-  if (socket) {
-    socket.on('signal', ({ data }) => {
-      if (data.fallbackProposal) {
-        handleIncomingProposal(data.files, true);
-      } else if (data.fallbackProposalReady) {
-        activeFilesMetadata = data.files;
-        // If receiver had approved, trigger automated HTTP downloads sequence
-        if (transferInProgress) {
-          engageHTTPReceiverFallback(data.files);
-        }
-      }
-    });
-  }
-
-  // Listen to remote signals before socket variables initialized
-  setInterval(() => {
-    if (socket && !socket.hasListeners('signal')) {
-      socket.on('signal', ({ data }) => {
-        if (data.fallbackProposal) {
-          handleIncomingProposal(data.files, true);
-        } else if (data.fallbackProposalReady) {
-          activeFilesMetadata = data.files;
-          if (transferInProgress) {
-            engageHTTPReceiverFallback(data.files);
-          }
-        }
-      });
-    }
-  }, 1000);
-
   /* ==========================================================================
      TRANSMISSION ENGINE HUD & SPEED METRICS
      ========================================================================== */
@@ -1132,6 +1157,8 @@
     proposalModal.classList.add('hidden');
     proposalBackdrop.classList.remove('active');
     
+    // Toggle active underlay backdrop
+    if (hudBackdrop) hudBackdrop.classList.add('active');
     transferHud.classList.remove('hidden');
     
     hudActivePeer.innerText = `Device Link (${activePin})`;
@@ -1166,7 +1193,7 @@
 
   function updateHUDProgress(percent) {
     percent = Math.min(100, Math.max(0, percent));
-    const circumference = 439.82;
+    const circumference = 376.99; // 2 * PI * r = 2 * 3.14159 * 60 = 376.99
     const offset = circumference - (percent / 100) * circumference;
     hudCircleFill.style.strokeDashoffset = offset;
     hudPercentageTxt.innerText = `${Math.round(percent)}%`;
@@ -1295,7 +1322,6 @@
      ========================================================================== */
   
   function streamFallbackTransmission() {
-    // Senders download links already broadcasted. Handled at complete.
     showToast('Transfer Approved', 'Peer approved transfer. Directing server pipelines...', 'success');
     completeTransferSession(true);
   }
@@ -1355,7 +1381,7 @@
   }
 
   /* ==========================================================================
-     CLEANUP & SESSON RESET (PERSISTENT FOCUS)
+     CLEANUP & SESSION RESET (PERSISTENT FOCUS)
      ========================================================================== */
   
   function completeTransferSession(success = true) {
@@ -1365,14 +1391,12 @@
     if (success) {
       showToast('Transfer Complete', 'All files processed successfully!', 'success');
       
-      // If we are sender, log history
       if (isSender) {
         stagedFiles.forEach(item => {
           recordHistoryItem(item.file.name, item.file.size, fallbackActive ? 'Cloud Fallback' : 'P2P Direct', 'success');
         });
       }
       
-      // Empty current staging files lists
       stagedFiles = [];
       renderStagedFilesRoom();
       renderHistory();
@@ -1380,6 +1404,7 @@
       // Fade out transfer HUD gracefully
       setTimeout(() => {
         transferHud.classList.add('hidden');
+        if (hudBackdrop) hudBackdrop.classList.remove('active');
       }, 2000);
     }
   }
@@ -1401,6 +1426,7 @@
     
     setTimeout(() => {
       transferHud.classList.add('hidden');
+      if (hudBackdrop) hudBackdrop.classList.remove('active');
     }, 2500);
   }
 

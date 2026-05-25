@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SW-HERE | Hybrid P2P File Sharing</title>
+  <!-- Favicon Logo link -->
+  <link rel="icon" type="image/png" href="/images/sw-here-logo.png">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +28,7 @@
     <header class="app-header">
       <div class="brand">
         <div class="brand-logo">
-          <i class="fa-solid fa-cloud-arrow-up neon-pulse"></i>
+          <img src="/images/sw-here-logo.png" alt="Logo" class="brand-logo-img">
         </div>
         <div class="brand-info">
           <h1 class="brand-name">SW-HERE</h1>
@@ -35,6 +37,9 @@
       </div>
       
       <div class="header-actions">
+        <button id="theme-toggle-btn" class="icon-btn-premium" title="Switch Theme">
+          <i class="fa-solid fa-sun"></i>
+        </button>
         <button id="toggle-history-btn" class="icon-btn-premium" title="Transfer History">
           <i class="fa-solid fa-history"></i>
         </button>
@@ -238,7 +243,18 @@
         <div class="dashboard-card tab-content-pane" id="pane-room-hub">
           <div class="room-hub-header">
             <h2 class="section-title text-teal"><i class="fa-solid fa-circle-check neon-pulse"></i> Connected Room</h2>
-            <p class="section-subtitle">Room PIN: <strong class="text-indigo" id="room-pin-display">----</strong> &bull; Share files back and forth continuously.</p>
+            <div class="room-header-meta" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <p class="section-subtitle" style="margin-bottom: 0;">Room PIN: <strong class="text-indigo" id="room-pin-display">----</strong> &bull; Share files back and forth continuously.</p>
+              
+              <!-- Premium Auto-Accept Toggle Switch -->
+              <div class="room-action-row" style="display: flex; align-items: center; gap: 8px;">
+                <span class="switch-label" style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary);"><i class="fa-solid fa-bolt mr-xs text-teal"></i> Auto-Accept</span>
+                <label class="switch-container" style="position: relative; display: inline-block; width: 34px; height: 20px;">
+                  <input type="checkbox" id="auto-accept-toggle" checked style="opacity: 0; width: 0; height: 0;">
+                  <span class="switch-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.06); border: 1px solid var(--card-border); transition: .3s; border-radius: 20px;"></span>
+                </label>
+              </div>
+            </div>
           </div>
 
           <!-- Staged files dropzone for active room -->
@@ -299,64 +315,6 @@
 
       </div>
 
-      <!-- ================= UNIVERSAL TRANSFER HUD ================= -->
-      <div class="dashboard-card hidden" id="transfer-hud">
-        <div class="hud-connection-bar">
-          <div class="hud-peer-name">
-            <i class="fa-solid fa-server-network mr-sm text-teal"></i>
-            Active Peer Link: <span id="hud-active-peer">Device</span>
-          </div>
-          <div class="hud-transfer-badge" id="hud-method-badge">
-            <i class="fa-solid fa-bolt mr-xs"></i> P2P DIRECT
-          </div>
-        </div>
-
-        <div class="hud-visual-progress-block">
-          <!-- Circular SVG Tracker -->
-          <div class="progress-ring-wrapper">
-            <svg class="progress-ring" width="160" height="160">
-              <circle class="progress-ring-circle-bg" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent" r="70" cx="80" cy="80" />
-              <circle class="progress-ring-circle-bar" id="hud-circle-fill" stroke="var(--accent-teal)" stroke-width="8" stroke-dasharray="439.82" stroke-dashoffset="439.82" fill="transparent" r="70" cx="80" cy="80" />
-            </svg>
-            <div class="progress-ring-inner">
-              <span class="progress-ring-percentage" id="hud-percentage-txt">0%</span>
-              <span class="progress-ring-label" id="hud-action-label">Streaming</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="hud-statistics-grid">
-          <div class="hud-stat-box">
-            <span class="hud-stat-label">Active Speed</span>
-            <span class="hud-stat-value text-teal" id="hud-stat-speed">0.00 KB/s</span>
-          </div>
-          <div class="hud-stat-box">
-            <span class="hud-stat-label">Transmitted Volume</span>
-            <span class="hud-stat-value" id="hud-stat-delivered">0.00 KB / 0.00 KB</span>
-          </div>
-          <div class="hud-stat-box">
-            <span class="hud-stat-label">Time Elapsed / ETA</span>
-            <span class="hud-stat-value" id="hud-stat-eta">00:00 / 00:00</span>
-          </div>
-        </div>
-
-        <div class="hud-linear-status-bar">
-          <div class="linear-bar-track">
-            <div class="linear-bar-fill" id="hud-linear-fill" style="width: 0%;"></div>
-          </div>
-        </div>
-
-        <div class="hud-file-transferring-list" id="hud-active-file-item">
-          <!-- Active transferring file status displays here -->
-        </div>
-
-        <div class="hud-action-controls">
-          <button type="button" class="btn-danger w-full" id="cancel-transfer-btn">
-            <i class="fa-solid fa-stop"></i> Cancel Transfer
-          </button>
-        </div>
-      </div>
-
     </main>
 
     <!-- History Drawer Overlay -->
@@ -410,6 +368,65 @@
             <i class="fa-solid fa-circle-check"></i> Accept & Save
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Universal Transfer HUD Dialog Modal Overlay -->
+    <div class="history-drawer-backdrop" id="hud-backdrop"></div>
+    <div class="dashboard-card hidden" id="transfer-hud" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1010; width: 90%; max-width: 440px; box-shadow: var(--glass-shadow); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);">
+      <div class="hud-connection-bar">
+        <div class="hud-peer-name">
+          <i class="fa-solid fa-server-network mr-sm text-teal"></i>
+          Active Peer Link: <span id="hud-active-peer">Device</span>
+        </div>
+        <div class="hud-transfer-badge" id="hud-method-badge">
+          <i class="fa-solid fa-bolt mr-xs"></i> P2P DIRECT
+        </div>
+      </div>
+
+      <div class="hud-visual-progress-block">
+        <!-- Circular SVG Tracker -->
+        <div class="progress-ring-wrapper">
+          <svg class="progress-ring" width="140" height="140">
+            <circle class="progress-ring-circle-bg" stroke="rgba(255,255,255,0.04)" stroke-width="6" fill="transparent" r="60" cx="70" cy="70" />
+            <circle class="progress-ring-circle-bar" id="hud-circle-fill" stroke="var(--accent-blue)" stroke-width="6" stroke-dasharray="376.99" stroke-dashoffset="376.99" fill="transparent" r="60" cx="70" cy="70" />
+          </svg>
+          <div class="progress-ring-inner">
+            <span class="progress-ring-percentage" id="hud-percentage-txt">0%</span>
+            <span class="progress-ring-label" id="hud-action-label">Streaming</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-statistics-grid">
+        <div class="hud-stat-box">
+          <span class="hud-stat-label">Active Speed</span>
+          <span class="hud-stat-value text-teal" id="hud-stat-speed">0.00 KB/s</span>
+        </div>
+        <div class="hud-stat-box">
+          <span class="hud-stat-label">Delivered Volume</span>
+          <span class="hud-stat-value" id="hud-stat-delivered">0.00 KB / 0.00 KB</span>
+        </div>
+        <div class="hud-stat-box">
+          <span class="hud-stat-label">ETA / Elapsed</span>
+          <span class="hud-stat-value" id="hud-stat-eta">00:00 / 00:00</span>
+        </div>
+      </div>
+
+      <div class="hud-linear-status-bar">
+        <div class="linear-bar-track">
+          <div class="linear-bar-fill" id="hud-linear-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="hud-file-transferring-list" id="hud-active-file-item">
+        <!-- Active transferring file status displays here -->
+      </div>
+
+      <div class="hud-action-controls">
+        <button type="button" class="btn-danger w-full" id="cancel-transfer-btn">
+          <i class="fa-solid fa-stop"></i> Cancel Transfer
+        </button>
       </div>
     </div>
 
