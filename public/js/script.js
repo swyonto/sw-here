@@ -149,10 +149,10 @@
     const savedTheme = localStorage.getItem('sw-here-theme') || 'dark';
     if (savedTheme === 'light') {
       document.body.classList.add('light-mode');
-      themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
     } else {
       document.body.classList.remove('light-mode');
-      themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
     }
     
     themeToggleBtn.addEventListener('click', () => {
@@ -160,13 +160,11 @@
       const isLight = document.body.classList.contains('light-mode');
       
       if (isLight) {
-        themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        localStorage.setItem('sw-here-theme', 'light');
-        showToast('Light Theme', 'Switched to clean glassy light mode.', 'info');
-      } else {
         themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        localStorage.setItem('sw-here-theme', 'light');
+      } else {
+        themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
         localStorage.setItem('sw-here-theme', 'dark');
-        showToast('Dark Theme', 'Switched to premium glassy dark mode.', 'info');
       }
     });
   }
