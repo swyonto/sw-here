@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
+const os = require('os');
 
 // Create uploads directory if it doesn't exist
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -47,9 +48,34 @@ const upload = multer({
 const sessions = new Map(); // pin -> { pin, senderSocketId, receiverSocketId, createdAt }
 const uploadedFiles = new Map(); // fileId -> { fileId, originalName, mimeType, size, filename, filePath, uploadedAt }
 
+// Discover local network IPv4 address prioritizing primary Wi-Fi/Ethernet adapters
+function getLocalIpAddress() {
+  const interfaces = os.networkInterfaces();
+  let fallbackIp = 'localhost';
+  
+  for (const name of Object.keys(interfaces)) {
+    const isPrimary = name.toLowerCase().includes('wi-fi') || 
+                      name.toLowerCase().includes('wifi') || 
+                      name.toLowerCase().includes('ethernet') || 
+                      name.toLowerCase().includes('wlan') || 
+                      name.toLowerCase().includes('en0') || 
+                      name.toLowerCase().includes('eth0');
+                      
+    for (const net of interfaces[name]) {
+      if (net.family === 'IPv4' && !net.internal) {
+        if (isPrimary) {
+          return net.address;
+        }
+        fallbackIp = net.address;
+      }
+    }
+  }
+  return fallbackIp;
+}
+
 // Dynamic routes
 app.get('/', (req, res) => {
-  res.render('index');
+  res.render('index', { localIp: getLocalIpAddress() });
 });
 
 // Check if a session code is active

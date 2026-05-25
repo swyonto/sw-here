@@ -437,6 +437,10 @@
 
   <!-- Socket.IO library -->
   <script src="/socket.io/socket.io.js"></script>
+  <!-- Expose discovered local server IP for offline QR code pairing -->
+  <script>
+    window.localServerIp = "<%= localIp %>";
+  </script>
   <!-- Main Application Logic Script -->
   <script src="/js/script.js"></script>
 </body>

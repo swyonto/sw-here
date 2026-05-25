@@ -653,7 +653,13 @@
       
       qrcodeContainer.innerHTML = '';
       const qrImg = document.createElement('img');
-      const pairingUrl = `${window.location.origin}/?pin=${pin}`;
+      
+      // Use discovered local server LAN IP address for offline network compatibility
+      const localIp = window.localServerIp || 'localhost';
+      const port = window.location.port ? `:${window.location.port}` : '';
+      const baseOrigin = (localIp !== 'localhost') ? `http://${localIp}${port}` : window.location.origin;
+      const pairingUrl = `${baseOrigin}/?pin=${pin}`;
+      
       const qrColor = '3b82f6'; // Shadcn Blue theme (royal blue color)
       const qrBgColor = '09090b'; // Matching pure black bg
       qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(pairingUrl)}&color=${qrColor}&bgcolor=${qrBgColor}&margin=8`;

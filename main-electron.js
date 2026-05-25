@@ -61,7 +61,7 @@ function createWindow() {
     if (!app.isQuitting) {
       event.preventDefault();
       mainWindow.hide();
-      
+
       // Send a native desktop notification to let user know it's in tray
       if (Notification.isSupported()) {
         const notification = new Notification({
