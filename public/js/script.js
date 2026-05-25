@@ -1455,6 +1455,7 @@
      ========================================================================== */
   
   function setupHistoryDrawer() {
+    if (!toggleHistoryBtn) return;
     toggleHistoryBtn.addEventListener('click', () => {
       historyDrawer.classList.add('active');
       historyBackdrop.classList.add('active');
