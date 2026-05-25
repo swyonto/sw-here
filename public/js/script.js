@@ -143,6 +143,7 @@
   // Theme Switcher Controller
   function setupThemeSwitcher() {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const brandLogoImg = document.querySelector('.brand-logo-img');
     if (!themeToggleBtn) return;
     
     // Load theme from localStorage
@@ -150,9 +151,11 @@
     if (savedTheme === 'light') {
       document.body.classList.add('light-mode');
       themeToggleBtn.innerHTML = '<i class="fa-regular fa-moon"></i>';
+      if (brandLogoImg) brandLogoImg.src = '/images/sw-here-logo.png';
     } else {
       document.body.classList.remove('light-mode');
       themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      if (brandLogoImg) brandLogoImg.src = '/images/image-dark.png';
     }
     
     themeToggleBtn.addEventListener('click', () => {
@@ -162,9 +165,11 @@
       if (isLight) {
         themeToggleBtn.innerHTML = '<i class="fa-regular fa-moon"></i>';
         localStorage.setItem('sw-here-theme', 'light');
+        if (brandLogoImg) brandLogoImg.src = '/images/sw-here-logo.png';
       } else {
         themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
         localStorage.setItem('sw-here-theme', 'dark');
+        if (brandLogoImg) brandLogoImg.src = '/images/image-dark.png';
       }
     });
   }
