@@ -1,7 +1,7 @@
 {
-  "name": "9.-sw-here",
-  "version": "1.0.0",
-  "description": "",
+  "name": "sw-here",
+  "version": "1.5.0",
+  "description": "SW-HERE - Hybrid P2P File Sharing Platform",
   "main": "main-electron.js",
   "scripts": {
     "start": "node app.js",
@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "SW-HERE",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
@@ -29,20 +29,21 @@
   "build": {
     "appId": "com.swhere.app",
     "productName": "SW-HERE",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/**/*",
+      "public/images/**/*"
+    ],
     "win": {
       "icon": "public/images/sw-here-logo.ico",
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         },
         {
           "target": "portable",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
       ]
     },
@@ -57,10 +58,12 @@
       "**/*",
       "!dist/**/*",
       "!node_modules/electron/**/*",
-      "!node_modules/electron-builder/**/*"
+      "!node_modules/electron-builder/**/*",
+      "!node_modules/png-to-ico/**/*"
     ],
     "directories": {
       "output": "dist"
     }
   }
 }
+
