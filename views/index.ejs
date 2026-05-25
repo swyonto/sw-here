@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SW-HERE | Hybrid P2P File Sharing</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Neon Ambient Glowing Background Lights -->
+  <div class="ambient-glow bg-glow-indigo"></div>
+  <div class="ambient-glow bg-glow-pink"></div>
+  <div class="ambient-glow bg-glow-teal"></div>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+    
+    <!-- Top Sleek Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-cloud-arrow-up neon-pulse"></i>
+        </div>
+        <div class="brand-info">
+          <h1 class="brand-name">SW-HERE</h1>
+          <span class="brand-badge">HYBRID DIRECT</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button id="toggle-history-btn" class="icon-btn-premium" title="Transfer History">
+          <i class="fa-solid fa-history"></i>
+        </button>
+        <div class="server-status">
+          <span class="status-dot online"></span>
+          <span class="status-text">Connected</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+      
+      <!-- Segmented Tab Selector -->
+      <div class="tab-segment-control" id="tab-switcher">
+        <button class="tab-btn active" data-tab="send">
+          <i class="fa-solid fa-paper-plane"></i> Send Files
+        </button>
+        <button class="tab-btn" data-tab="receive">
+          <i class="fa-solid fa-download"></i> Receive Files
+        </button>
+        <div class="tab-glider"></div>
+      </div>
+
+      <!-- Card Container (Glassmorphic Slider) -->
+      <div class="dashboard-card-viewport">
+        
+        <!-- ================= SEND COMPONENT ================= -->
+        <div class="dashboard-card tab-content-pane active" id="pane-send">
+          
+          <!-- State 1: Select Files / Folders -->
+          <div class="send-state-zone" id="send-select-state">
+            <h2 class="section-title">Prepare Your Transfer</h2>
+            <p class="section-subtitle">Drop files, folders or select them directly below to share peer-to-peer.</p>
+            
+            <!-- Drag & Drop Zone -->
+            <div class="dropzone-container" id="dropzone">
+              <input type="file" id="file-input" class="hidden-input" multiple>
+              <input type="file" id="folder-input" class="hidden-input" webkitdirectory directory multiple>
+              
+              <div class="dropzone-inner">
+                <div class="dropzone-icon-glow">
+                  <i class="fa-solid fa-file-shield dropzone-icon"></i>
+                </div>
+                <h3 class="dropzone-title">Drag & Drop Files Here</h3>
+                <p class="dropzone-desc">Supports documents, directories, videos, and multi-file aggregates</p>
+                
+                <div class="dropzone-actions">
+                  <button type="button" class="btn-secondary" id="select-files-btn">
+                    <i class="fa-solid fa-files"></i> Select Files
+                  </button>
+                  <button type="button" class="btn-secondary" id="select-folders-btn">
+                    <i class="fa-solid fa-folder-open"></i> Select Folder
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Staged Files list -->
+            <div class="staged-container hidden" id="staged-container">
+              <div class="staged-header">
+                <h4>Staged Files (<span id="staged-count">0</span>)</h4>
+                <button type="button" class="clear-btn" id="clear-staged-btn">Clear All</button>
+              </div>
+              
+              <div class="staged-files-list" id="staged-files-list">
+                <!-- Staged files rendered dynamically here -->
+              </div>
+              
+              <div class="staged-summary-bar">
+                <div class="staged-total-info">
+                  <span class="total-label">Total Volume:</span>
+                  <span class="total-val" id="staged-total-size">0.00 KB</span>
+                </div>
+                
+                <button type="button" class="btn-primary btn-glow" id="generate-code-btn">
+                  <i class="fa-solid fa-qrcode"></i> Generate Pair Code
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- State 2: Active Session & Pairing -->
+          <div class="send-state-zone hidden" id="send-pairing-state">
+            <h2 class="section-title">Scan or Input Pairing Code</h2>
+            <p class="section-subtitle">Share this code or QR with the receiver. Keep this window open.</p>
+
+            <div class="pairing-code-showcase">
+              <!-- Digital Pin Blocks -->
+              <div class="pairing-digits" id="pairing-pin-container">
+                <span class="digit-box">-</span>
+                <span class="digit-box">-</span>
+                <span class="digit-box">-</span>
+                <span class="digit-box">-</span>
+                <span class="digit-box">-</span>
+                <span class="digit-box">-</span>
+              </div>
+              
+              <button class="btn-copy-pin" id="copy-pin-btn" title="Copy Pin">
+                <i class="fa-solid fa-copy"></i> Copy Pin
+              </button>
+            </div>
+
+            <div class="qr-canvas-holder">
+              <div class="qr-glow-frame">
+                <div id="qrcode-container" class="qrcode-wrapper">
+                  <!-- Generated QR Canvas or Img here -->
+                  <div class="qr-loader">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pairing-waiting-footer">
+              <div class="pulsing-beacon">
+                <div class="beacon-circle outer"></div>
+                <div class="beacon-circle middle"></div>
+                <div class="beacon-circle inner"></div>
+              </div>
+              <p class="waiting-text">Waiting for device connection...</p>
+              <button type="button" class="btn-danger-outline" id="cancel-send-session-btn">
+                <i class="fa-solid fa-xmark"></i> Cancel Session
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= RECEIVE COMPONENT ================= -->
+        <div class="dashboard-card tab-content-pane" id="pane-receive">
+          
+          <div class="receive-state-zone" id="receive-entry-state">
+            <h2 class="section-title">Enter Session Pairing Code</h2>
+            <p class="section-subtitle">Input the 6-digit session pin generated by the sending device.</p>
+            
+            <div class="pin-input-board">
+              <div class="pin-inputs" id="pin-input-group">
+                <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-char-field" id="p-1" autocomplete="off">
+                <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-char-field" id="p-2" autocomplete="off">
+                <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-char-field" id="p-3" autocomplete="off">
+                <span class="pin-divider">-</span>
+                <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-char-field" id="p-4" autocomplete="off">
+                <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-char-field" id="p-5" autocomplete="off">
+                <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="pin-char-field" id="p-6" autocomplete="off">
+              </div>
+              
+              <p class="pin-error-hint hidden" id="pin-error-text">Invalid pairing pin. Try again.</p>
+
+              <button type="button" class="btn-primary btn-glow w-full mt-lg" id="join-session-btn">
+                <i class="fa-solid fa-link"></i> Establish Connection
+              </button>
+            </div>
+
+            <!-- Visual instructions box -->
+            <div class="quick-instruction-card">
+              <div class="ins-item">
+                <div class="ins-badge">1</div>
+                <p>Stage files on the sending device and click <strong>Generate Pair Code</strong>.</p>
+              </div>
+              <div class="ins-item">
+                <div class="ins-badge">2</div>
+                <p>Input the numeric code here or scan the QR code with your camera.</p>
+              </div>
+              <div class="ins-item">
+                <div class="ins-badge">3</div>
+                <p>Maintain browser tabs active until transfer completes directly peer-to-peer.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- State 2: Handshake & Transfer Request Pending -->
+          <div class="receive-state-zone hidden" id="receive-request-state">
+            <h2 class="section-title">Pairing Secured Successfully</h2>
+            <p class="section-subtitle">Device has proposed a transfer. Review the file details below.</p>
+
+            <div class="proposed-transfer-hud">
+              <div class="proposed-icon-banner">
+                <i class="fa-solid fa-share-nodes proposed-icon animate-bounce"></i>
+              </div>
+              <div class="proposed-summary">
+                <p class="proposed-peer-name">Incoming from Peer: <span id="peer-id-display">Connecting...</span></p>
+                <h4 class="proposed-files-title"><span id="meta-files-count">0</span> files staged for delivery</h4>
+                <p class="proposed-files-weight">Total payload: <span id="meta-files-size">0.00 KB</span></p>
+              </div>
+              
+              <div class="proposed-files-scroller" id="meta-files-list">
+                <!-- Staged meta list generated dynamically -->
+              </div>
+              
+              <div class="proposed-decisions">
+                <button type="button" class="btn-danger w-half" id="reject-transfer-btn">
+                  <i class="fa-solid fa-ban"></i> Reject
+                </button>
+                <button type="button" class="btn-primary btn-glow w-half" id="accept-transfer-btn">
+                  <i class="fa-solid fa-circle-check"></i> Accept & Save
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= UNIVERSAL TRANSFER HUD ================= -->
+      <div class="dashboard-card hidden" id="transfer-hud">
+        <div class="hud-connection-bar">
+          <div class="hud-peer-name">
+            <i class="fa-solid fa-server-network mr-sm text-teal"></i>
+            Active Peer Link: <span id="hud-active-peer">Device</span>
+          </div>
+          <div class="hud-transfer-badge" id="hud-method-badge">
+            <i class="fa-solid fa-bolt mr-xs"></i> P2P DIRECT
+          </div>
+        </div>
+
+        <div class="hud-visual-progress-block">
+          <!-- Circular SVG Tracker -->
+          <div class="progress-ring-wrapper">
+            <svg class="progress-ring" width="160" height="160">
+              <circle class="progress-ring-circle-bg" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="transparent" r="70" cx="80" cy="80" />
+              <circle class="progress-ring-circle-bar" id="hud-circle-fill" stroke="var(--accent-teal)" stroke-width="8" stroke-dasharray="439.82" stroke-dashoffset="439.82" fill="transparent" r="70" cx="80" cy="80" />
+            </svg>
+            <div class="progress-ring-inner">
+              <span class="progress-ring-percentage" id="hud-percentage-txt">0%</span>
+              <span class="progress-ring-label" id="hud-action-label">Streaming</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-statistics-grid">
+          <div class="hud-stat-box">
+            <span class="hud-stat-label">Active Speed</span>
+            <span class="hud-stat-value text-teal" id="hud-stat-speed">0.00 KB/s</span>
+          </div>
+          <div class="hud-stat-box">
+            <span class="hud-stat-label">Transmitted Volume</span>
+            <span class="hud-stat-value" id="hud-stat-delivered">0.00 KB / 0.00 KB</span>
+          </div>
+          <div class="hud-stat-box">
+            <span class="hud-stat-label">Time Elapsed / ETA</span>
+            <span class="hud-stat-value" id="hud-stat-eta">00:00 / 00:00</span>
+          </div>
+        </div>
+
+        <div class="hud-linear-status-bar">
+          <div class="linear-bar-track">
+            <div class="linear-bar-fill" id="hud-linear-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="hud-file-transferring-list" id="hud-active-file-item">
+          <!-- Active transferring file status displays here -->
+        </div>
+
+        <div class="hud-action-controls">
+          <button type="button" class="btn-danger w-full" id="cancel-transfer-btn">
+            <i class="fa-solid fa-stop"></i> Cancel Transfer
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- History Drawer Overlay -->
+    <div class="history-drawer-backdrop" id="history-backdrop"></div>
+    <div class="history-drawer" id="history-drawer">
+      <div class="drawer-header">
+        <h3><i class="fa-solid fa-history mr-sm"></i> Transfer Log</h3>
+        <button id="close-history-btn" class="close-drawer-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <div class="drawer-content">
+        <div class="history-empty" id="history-empty-view">
+          <i class="fa-solid fa-folder-open empty-icon"></i>
+          <p>No logged transfers in this session.</p>
+        </div>
+        <div class="history-items-list hidden" id="history-items-list">
+          <!-- Populated by script -->
+        </div>
+      </div>
+      
+      <div class="drawer-footer">
+        <button type="button" class="btn-secondary w-full" id="clear-history-btn">
+          <i class="fa-solid fa-trash-can mr-sm"></i> Clear History
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Toast Host -->
+    <div class="toast-container" id="toast-container"></div>
+  </div>
+
+  <!-- Socket.IO library -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Main Application Logic Script -->
+  <script src="/js/script.js"></script>
+</body>
+</html>
