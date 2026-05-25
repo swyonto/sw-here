@@ -85,6 +85,16 @@ body *,
               box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.ambient-glow-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Ambient Glowing Background Orbs (Subtle Premium Blur) */
 .ambient-glow {
   position: absolute;
