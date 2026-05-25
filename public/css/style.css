@@ -60,6 +60,31 @@ body {
   align-items: center;
 }
 
+/* Smooth transition for premium theme switching */
+body,
+body *,
+.app-header,
+.dashboard-card,
+.tab-segment-control,
+.tab-glider,
+.tab-btn,
+.dropzone-container,
+.staged-container,
+.staged-file-card,
+.digit-box,
+.pin-char-field,
+.history-drawer,
+.history-item-card,
+.proposed-files-scroller,
+.hud-statistics-grid,
+.hud-file-transferring-list,
+.switch-slider {
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Ambient Glowing Background Orbs (Subtle Premium Blur) */
 .ambient-glow {
   position: absolute;

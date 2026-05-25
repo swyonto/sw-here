@@ -149,7 +149,7 @@
     const savedTheme = localStorage.getItem('sw-here-theme') || 'dark';
     if (savedTheme === 'light') {
       document.body.classList.add('light-mode');
-      themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      themeToggleBtn.innerHTML = '<i class="fa-regular fa-moon"></i>';
     } else {
       document.body.classList.remove('light-mode');
       themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
@@ -160,7 +160,7 @@
       const isLight = document.body.classList.contains('light-mode');
       
       if (isLight) {
-        themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        themeToggleBtn.innerHTML = '<i class="fa-regular fa-moon"></i>';
         localStorage.setItem('sw-here-theme', 'light');
       } else {
         themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
