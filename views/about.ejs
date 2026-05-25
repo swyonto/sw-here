@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SW-HERE | Share Files Instantly, Anywhere</title>
-  <meta name="description" content="SW-HERE is a hybrid P2P file sharing platform. Send files directly between devices over Wi-Fi or internet — no accounts, no limits, blazing fast.">
+  <meta name="description" content="SW-HERE is a secure P2P file sharing platform. Send files directly between devices over Wi-Fi or internet — no accounts, no limits, blazing fast.">
   <link rel="icon" type="image/png" href="/images/sw-here-logo.png">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,26 +53,62 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 48px;
-      background: rgba(7,7,15,0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+      padding: 12px 48px;
+      background: #08080a; /* Match app header */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Sleek micro-border matching app header */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
     .nav-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-family: var(--font-brand);
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 0.3px;
+      gap: 12px;
+      cursor: pointer;
     }
 
-    .nav-brand img {
-      width: 32px;
-      height: 32px;
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px; /* Elegant matching size */
+      height: 42px;
+      border-radius: 12px; /* Modern square rounded corners */
+      padding: 6px;
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
       border-radius: 8px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .brand-name {
+      font-family: var(--font-brand);
+      font-size: 1.22rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .brand-badge {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #3b82f6; /* Premium standard blue */
+      letter-spacing: 1px;
+      margin-top: 2px;
     }
 
     .nav-links {
@@ -743,10 +779,15 @@
 
   <!-- ── Navbar ──────────────────────────────────── -->
   <nav class="nav">
-    <div class="nav-brand">
-      <img src="/images/sw-here-logo.png" alt="SW-HERE Logo">
-      SW-HERE
-    </div>
+    <a href="/about" class="nav-brand" title="About SW-HERE" style="text-decoration: none; color: inherit;">
+      <div class="brand-logo">
+        <img src="/images/image-dark.png" alt="Logo" class="brand-logo-img">
+      </div>
+      <div class="brand-info">
+        <span class="brand-name">SW-HERE</span>
+        <span class="brand-badge">P2P DIRECT</span>
+      </div>
+    </a>
 
     <div class="nav-links">
       <a href="#features">Features</a>
@@ -932,7 +973,7 @@
   <section class="section" id="about">
     <div class="section-label"><i class="fa-solid fa-circle-info"></i> About This Project</div>
     <h2 class="section-title">Open Source. Built with ❤️</h2>
-    <p class="section-desc">SW-HERE is an open-source hybrid file sharing platform built with Node.js, WebRTC, and Electron.</p>
+    <p class="section-desc">SW-HERE is an open-source secure P2P file sharing platform built with Node.js, WebRTC, and Electron.</p>
 
     <div class="about-grid">
       <div class="about-card">

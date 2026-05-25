@@ -109,6 +109,9 @@ function createWindow() {
     }
   });
 
+  // Completely remove native File/Edit/View menu window/bar
+  mainWindow.removeMenu();
+
   // Wait for server to be ready before loading
   waitForServer('http://localhost:3000', 10000, (err) => {
     if (err) {
@@ -183,7 +186,7 @@ function createTray() {
       }
     ]);
 
-    tray.setToolTip('SW-HERE | Hybrid P2P Share');
+    tray.setToolTip('SW-HERE v2.2');
     tray.setContextMenu(contextMenu);
 
     tray.on('double-click', () => {

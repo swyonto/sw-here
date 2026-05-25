@@ -80,8 +80,8 @@ app.get('/', (req, res) => {
 });
 
 // ─── GitHub Release Download URL (update this when publishing a release) ──────
-const GITHUB_RELEASE_URL = 'https://github.com/swyonto/sw-here/releases/latest';
-const WINDOWS_INSTALLER_URL = `${GITHUB_RELEASE_URL}/download/SW-HERE-Setup.exe`;
+const GITHUB_RELEASE_URL = 'https://github.com/swyonto/sw-here/releases/tag/v2.2.0';
+const WINDOWS_INSTALLER_URL = 'https://github.com/swyonto/sw-here/releases/download/v2.2.0/sw-herev2.2.0.zip';
 
 // About / Landing page
 app.get('/about', (req, res) => {

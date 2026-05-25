@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SW-HERE FRONTEND CONTROLLER - PERSISTENT ROOM P2P & HYBRID TRANSFER
+   SW-HERE FRONTEND CONTROLLER - PERSISTENT ROOM P2P & DIRECT TRANSFER
    ========================================================================== */
 
 (function () {
