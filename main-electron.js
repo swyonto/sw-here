@@ -93,9 +93,15 @@ function createWindow() {
     minHeight: 600,
     resizable: true,
     icon: iconPath,
-    backgroundColor: '#09090b',
-    title: 'SW-HERE | Hybrid P2P Sharing',
+    backgroundColor: '#08080a',
+    title: 'SW-HERE',
     show: false, // Don't show until server is ready
+    titleBarStyle: 'hidden',        // Hide default title text, keep native controls
+    titleBarOverlay: {
+      color: '#08080a',             // Match app's pitch-black navbar background
+      symbolColor: '#94a3b8',       // Slate-400 — soft icon color matching UI
+      height: 38                    // Match header height
+    },
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -202,6 +208,9 @@ app.on('second-instance', () => {
 
 // ─── App Ready ───────────────────────────────────────────────────────────────
 app.whenReady().then(() => {
+  // Remove the native File/Edit/View/Window menu bar completely
+  Menu.setApplicationMenu(null);
+
   startServer();
   createWindow();
   createTray();
