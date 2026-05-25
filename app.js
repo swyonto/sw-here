@@ -78,6 +78,21 @@ app.get('/', (req, res) => {
   res.render('index', { localIp: getLocalIpAddress() });
 });
 
+// Download route for the Windows Desktop App installer
+app.get('/download/windows', (req, res) => {
+  const fs = require('fs');
+  const installerPath = path.join(__dirname, 'dist', 'SW-HERE Setup 1.0.0.exe');
+  if (fs.existsSync(installerPath)) {
+    return res.download(installerPath, 'SW-HERE-Setup.exe');
+  } else {
+    const portablePath = path.join(__dirname, 'dist', 'SW-HERE 1.0.0.exe');
+    if (fs.existsSync(portablePath)) {
+      return res.download(portablePath, 'SW-HERE.exe');
+    }
+  }
+  return res.status(404).send('Windows app installer is currently being compiled on the server. Please check back in a moment!');
+});
+
 // Check if a session code is active
 app.get('/api/session/:pin', (req, res) => {
   const pin = req.params.pin;

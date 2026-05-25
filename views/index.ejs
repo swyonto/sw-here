@@ -42,6 +42,10 @@
       </div>
       
       <div class="header-actions">
+        <!-- Download desktop app button (hidden inside Electron, shown on Web browser) -->
+        <a href="/download/windows" id="download-desktop-btn" class="icon-btn-premium hidden" title="Download Windows App">
+          <i class="fa-solid fa-download"></i>
+        </a>
         <button id="theme-toggle-btn" class="icon-btn-premium" title="Switch Theme">
           <i class="fa-solid fa-moon"></i>
         </button>
@@ -51,6 +55,25 @@
         </div>
       </div>
     </header>
+
+    <!-- Desktop App Promo Banner (shown on standard Web browsers, hidden inside Electron) -->
+    <div id="desktop-app-banner" class="glass-banner hidden">
+      <div class="banner-content">
+        <i class="fa-solid fa-laptop-code banner-icon"></i>
+        <div class="banner-text">
+          <span class="banner-title">Get SW-HERE for Windows</span>
+          <span class="banner-desc">Share files offline via Wi-Fi hotspot, bypass browser limits, and get higher speeds!</span>
+        </div>
+      </div>
+      <div class="banner-actions">
+        <a href="/download/windows" class="btn-premium btn-xs" style="text-decoration: none; padding: 6px 14px; font-size: 0.68rem; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; font-weight: 700;">
+          <i class="fa-solid fa-download"></i> Download App
+        </a>
+        <button id="close-banner-btn" class="close-icon-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
 
     <!-- Main Dashboard -->
     <main class="dashboard-main">

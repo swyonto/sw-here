@@ -791,7 +791,6 @@
     if (autoAccept) {
       // Auto-approve fallback transfer
       socket.emit('transfer-status', { pin: activePin, status: 'accepted' });
-      showToast('Streaming Started', 'Incoming transfer approved automatically.', 'success');
     } else {
       handleIncomingProposal(files, true);
     }
@@ -1093,7 +1092,6 @@
           let totalBytes = msg.files.reduce((acc, f) => acc + f.size, 0);
           activeFilesMetadata = msg.files;
           prepareTransferHUD(false, totalBytes);
-          showToast('Streaming Started', 'Incoming transfer approved automatically.', 'success');
         } else {
           handleIncomingProposal(msg.files, false);
         }
@@ -1102,7 +1100,6 @@
       // 2. Receive incoming transfer decisions (Sender side)
       else if (msg.type === 'approve-transfer') {
         if (msg.status === 'accepted') {
-          showToast('Approved', 'Peer approved the transfer. Commencing WebRTC stream...', 'success');
           startWebRTCTransmission();
         } else if (msg.status === 'rejected') {
           showToast('Declined', 'Peer declined the files payload.', 'error');
@@ -1147,7 +1144,6 @@
         }, 150);
         
         recordHistoryItem(fileMeta.name, fileMeta.size, 'P2P Direct', 'success');
-        showToast('File Saved', `${fileMeta.name} downloaded successfully!`, 'success');
       } else if (msg.type === 'transfer-complete') {
         completeTransferSession(true);
       }
@@ -1345,13 +1341,11 @@
      ========================================================================== */
   
   function streamFallbackTransmission() {
-    showToast('Transfer Approved', 'Peer approved transfer. Directing server pipelines...', 'success');
     completeTransferSession(true);
   }
 
   function engageHTTPReceiverFallback(files) {
     fallbackActive = true;
-    showToast('Secure Fallback Routed', 'Pulling files from cloud fallback...', 'info');
     
     totalTransferSize = files.reduce((acc, f) => acc + f.size, 0);
     prepareTransferHUD(true, totalTransferSize);
