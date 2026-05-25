@@ -1607,10 +1607,15 @@ body.light-mode {
   --text-secondary: #475569; /* Slate-600 */
   --text-muted: #94a3b8; /* Slate-400 */
   
-  --glass-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.1);
+  --glass-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.04);
 }
 
 /* Light mode specific element adjustments */
+body.light-mode .dashboard-card:hover {
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 30px 60px -10px rgba(15, 23, 42, 0.06), 0 0 30px rgba(59, 130, 246, 0.02);
+}
+
 body.light-mode .ambient-glow {
   opacity: 0.15;
 }
@@ -1779,8 +1784,8 @@ body.light-mode .hud-file-transferring-list {
 /* Float transfer HUD overlay rules in light mode */
 body.light-mode #transfer-hud,
 body.light-mode #proposal-modal {
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.15) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 
 /* Premium Switch Slider Custom Styling */
