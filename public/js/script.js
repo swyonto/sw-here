@@ -656,10 +656,22 @@
       qrcodeContainer.innerHTML = '';
       const qrImg = document.createElement('img');
       
-      // Use discovered local server LAN IP address for offline network compatibility
+      // Detect if we are in public Website Mode or local offline LAN Mode
+      const isLocalMode = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' || 
+                           window.location.hostname.startsWith('192.168.') || 
+                           window.location.hostname.startsWith('10.') || 
+                           window.location.hostname.startsWith('172.');
+      
       const localIp = window.localServerIp || 'localhost';
       const port = window.location.port ? `:${window.location.port}` : '';
-      const baseOrigin = (localIp !== 'localhost') ? `http://${localIp}${port}` : window.location.origin;
+      
+      // Public Mode: use browser's current origin (supports Railway custom domains)
+      // Local Mode: use discovered LAN IP for offline network compatibility
+      const baseOrigin = (!isLocalMode)
+        ? window.location.origin
+        : (localIp !== 'localhost' ? `http://${localIp}${port}` : window.location.origin);
+        
       const pairingUrl = `${baseOrigin}/?pin=${pin}`;
       
       const qrColor = '3b82f6'; // Shadcn Blue theme (royal blue color)
