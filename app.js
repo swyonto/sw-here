@@ -143,11 +143,11 @@ setInterval(() => {
   }
 }, 60 * 1000); // Run scan every 1 minute
 
-// Helper: generate random 6-digit numeric pairing code
+// Helper: generate random 4-digit numeric pairing code
 function generatePin() {
   let pin;
   do {
-    pin = Math.floor(100000 + Math.random() * 900000).toString();
+    pin = Math.floor(1000 + Math.random() * 9000).toString();
   } while (sessions.has(pin));
   return pin;
 }

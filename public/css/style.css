@@ -1459,3 +1459,41 @@ button {
     width: 100% !important;
   }
 }
+
+/* ==========================================================================
+   ACTIVE ROOM HUB & OVERLAY STYLING ADDITIONS
+   ========================================================================== */
+
+#pane-room-hub.active {
+  display: block;
+  animation: slideFadeIn var(--transition-normal) forwards;
+}
+
+.room-hub-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 14px;
+  margin-bottom: 24px;
+}
+
+.room-hub-header h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Float transfer HUD as a high-end centered overlay modal */
+#transfer-hud {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 1050 !important;
+  width: 90% !important;
+  max-width: 460px !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+}
+
