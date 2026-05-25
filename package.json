@@ -1,6 +1,6 @@
 {
   "name": "sw-here",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "SW-HERE - Hybrid P2P File Sharing Platform",
   "main": "main-electron.js",
   "scripts": {

@@ -6,6 +6,7 @@ const fs = require('fs');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const os = require('os');
+const pkg = require('./package.json');
 
 // Use injected writable path when running inside packaged Electron, otherwise use local dir
 const UPLOADS_DIR = process.env.SW_UPLOADS_DIR || path.join(__dirname, 'uploads');
@@ -88,7 +89,7 @@ app.get('/about', (req, res) => {
     githubUrl: 'https://github.com/swyonto/sw-here',
     downloadUrl: WINDOWS_INSTALLER_URL,
     releaseUrl: GITHUB_RELEASE_URL,
-    version: '1.5.0'
+    version: pkg.version || '2.0.0'
   });
 });
 
