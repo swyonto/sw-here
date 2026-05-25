@@ -796,9 +796,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: #0d1426;
   border-radius: var(--border-radius-sm);
   padding: 6px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .qrcode-wrapper canvas {

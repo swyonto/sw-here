@@ -130,7 +130,34 @@
     setupHistoryDrawer();
     renderHistory();
     
+    // Check for query parameter PIN code for auto-connect accessibility
+    checkUrlPinCode();
+    
     window.addEventListener('beforeunload', cleanupAllConnections);
+  }
+
+  function checkUrlPinCode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pinFromUrl = urlParams.get('pin');
+    if (pinFromUrl && pinFromUrl.length === 4 && /^\d+$/.test(pinFromUrl)) {
+      showToast('PIN Detected', `Auto-filling session PIN: ${pinFromUrl}`, 'info');
+      
+      // Auto switch to receive tab
+      const receiveTabBtn = document.querySelector('.tab-btn[data-tab="receive"]');
+      if (receiveTabBtn) {
+        receiveTabBtn.click();
+      }
+      
+      // Populate numeric pin inputs
+      pinInputs.forEach((input, index) => {
+        input.value = pinFromUrl[index] || '';
+      });
+      
+      // Auto initiate connection join
+      setTimeout(() => {
+        initiateReceiverJoin();
+      }, 800);
+    }
   }
 
   // Toast Notification System
@@ -586,9 +613,13 @@
       
       qrcodeContainer.innerHTML = '';
       const qrImg = document.createElement('img');
-      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${pin}`;
+      const pairingUrl = `${window.location.origin}/?pin=${pin}`;
+      const qrColor = '6366f1'; // electric indigo theme
+      const qrBgColor = '0d1426'; // dark slate theme
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(pairingUrl)}&color=${qrColor}&bgcolor=${qrBgColor}&margin=8`;
       qrImg.alt = 'QR Code';
-      qrImg.className = 'qrcode-wrapper img';
+      qrImg.style.width = '100%';
+      qrImg.style.height = '100%';
       qrcodeContainer.appendChild(qrImg);
       
       sendSelectState.classList.add('hidden');
