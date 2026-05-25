@@ -21,6 +21,7 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
-    "electron": "^42.2.0"
+    "electron": "^42.2.0",
+    "png-to-ico": "^3.0.1"
   }
 }
