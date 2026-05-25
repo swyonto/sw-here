@@ -1223,6 +1223,7 @@
         } catch (e) {}
       }
       socket.emit('transfer-status', { pin: activePin, status: 'cancelled' });
+      cleanupWebRTC();
       handleTransferFailure('Transfer aborted.');
     };
   }
@@ -1451,6 +1452,8 @@
     clearInterval(speedInterval);
     showToast('Transfer Failed', reason, 'error');
     
+    cleanupWebRTC();
+    
     if (isSender) {
       stagedFiles.forEach(item => {
         recordHistoryItem(item.file.name, item.file.size, fallbackActive ? 'Cloud Fallback' : 'P2P Direct', 'failed');
@@ -1467,11 +1470,8 @@
     }, 2500);
   }
 
-  function cleanupAllConnections() {
-    clearTimeout(signalTimeout);
-    clearInterval(speedInterval);
-    transferInProgress = false;
-    
+  function cleanupWebRTC() {
+    isChannelOpen = false;
     if (dataChannel) {
       try { dataChannel.close(); } catch (e) {}
       dataChannel = null;
@@ -1480,12 +1480,20 @@
       try { peerConnection.close(); } catch (e) {}
       peerConnection = null;
     }
+  }
+
+  function cleanupAllConnections() {
+    clearTimeout(signalTimeout);
+    clearInterval(speedInterval);
+    transferInProgress = false;
+    
+    cleanupWebRTC();
+    
     if (socket) {
       try { socket.disconnect(); } catch (e) {}
       socket = null;
     }
     
-    isChannelOpen = false;
     fallbackActive = false;
   }
 
