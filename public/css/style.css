@@ -1934,6 +1934,7 @@ body.light-mode .switch-slider {
   width: 100%;
   transition: var(--transition-normal);
   margin-top: 14px;
+  margin-bottom: 14px;
 }
 
 .btn-qr-scan:hover {

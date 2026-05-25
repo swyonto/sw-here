@@ -1494,7 +1494,7 @@
     
     // Initialize html5QrCode scanner instance
     try {
-      html5QrCode = new Html5QrCode("qr-reader");
+      html5QrCode = new Html5Qrcode("qr-reader");
       const config = { fps: 10, qrbox: { width: 220, height: 220 } };
 
       html5QrCode.start(
