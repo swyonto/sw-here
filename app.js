@@ -40,7 +40,7 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: { fileSize: 500 * 1024 * 1024 } // 500MB upload limit for fallback
 });
@@ -53,15 +53,15 @@ const uploadedFiles = new Map(); // fileId -> { fileId, originalName, mimeType, 
 function getLocalIpAddress() {
   const interfaces = os.networkInterfaces();
   let fallbackIp = 'localhost';
-  
+
   for (const name of Object.keys(interfaces)) {
-    const isPrimary = name.toLowerCase().includes('wi-fi') || 
-                      name.toLowerCase().includes('wifi') || 
-                      name.toLowerCase().includes('ethernet') || 
-                      name.toLowerCase().includes('wlan') || 
-                      name.toLowerCase().includes('en0') || 
-                      name.toLowerCase().includes('eth0');
-                      
+    const isPrimary = name.toLowerCase().includes('wi-fi') ||
+      name.toLowerCase().includes('wifi') ||
+      name.toLowerCase().includes('ethernet') ||
+      name.toLowerCase().includes('wlan') ||
+      name.toLowerCase().includes('en0') ||
+      name.toLowerCase().includes('eth0');
+
     for (const net of interfaces[name]) {
       if (net.family === 'IPv4' && !net.internal) {
         if (isPrimary) {
@@ -161,7 +161,7 @@ app.get('/api/download/:fileId', (req, res) => {
   // Force download with the original file name
   res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(fileMeta.originalName)}"`);
   res.setHeader('Content-Type', fileMeta.mimeType);
-  
+
   const fileStream = fs.createReadStream(fileMeta.filePath);
   fileStream.pipe(res);
 });
@@ -178,11 +178,11 @@ app.get('/api/uploads', (req, res) => {
       } catch (e) {
         return null;
       }
-      
+
       // Try to find matching metadata from the memory registry
       const fileId = filename.split('.')[0];
       const meta = uploadedFiles.get(fileId) || {};
-      
+
       return {
         filename,
         originalName: meta.originalName || filename,
@@ -192,7 +192,7 @@ app.get('/api/uploads', (req, res) => {
         mimeType: meta.mimeType || 'application/octet-stream'
       };
     }).filter(Boolean);
-    
+
     res.json({
       success: true,
       count: fileDetails.length,
@@ -210,7 +210,7 @@ app.all('/api/uploads/clear', (req, res) => {
   try {
     const files = fs.readdirSync(UPLOADS_DIR);
     let deletedCount = 0;
-    
+
     for (const filename of files) {
       const filePath = path.join(UPLOADS_DIR, filename);
       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
@@ -218,9 +218,9 @@ app.all('/api/uploads/clear', (req, res) => {
         deletedCount++;
       }
     }
-    
+
     uploadedFiles.clear();
-    
+
     res.json({
       success: true,
       message: `Cleared uploads directory. Successfully deleted ${deletedCount} file(s).`,
@@ -282,7 +282,7 @@ io.on('connection', (socket) => {
       receiverSocketId: null,
       createdAt: Date.now()
     });
-    
+
     socket.join(pin);
     socket.emit('session-created', { pin });
     console.log(`[Socket] Created session pin: ${pin} for sender: ${socket.id}`);
@@ -291,7 +291,7 @@ io.on('connection', (socket) => {
   // Join pairing session
   socket.on('join-session', ({ pin }) => {
     const session = sessions.get(pin);
-    
+
     if (!session) {
       socket.emit('session-error', { message: 'Pairing pin not found or expired.' });
       return;
@@ -305,14 +305,14 @@ io.on('connection', (socket) => {
     // Set receiver ID and join room
     session.receiverSocketId = socket.id;
     socket.join(pin);
-    
+
     // Notify both peers
     io.to(pin).emit('session-joined', {
       pin,
       senderSocketId: session.senderSocketId,
       receiverSocketId: socket.id
     });
-    
+
     console.log(`[Socket] Receiver: ${socket.id} joined session pin: ${pin}`);
   });
 
@@ -322,8 +322,8 @@ io.on('connection', (socket) => {
     if (!session) return;
 
     // Send to other socket in the room
-    const targetSocketId = socket.id === session.senderSocketId 
-      ? session.receiverSocketId 
+    const targetSocketId = socket.id === session.senderSocketId
+      ? session.receiverSocketId
       : session.senderSocketId;
 
     if (targetSocketId) {
@@ -344,8 +344,8 @@ io.on('connection', (socket) => {
     const session = sessions.get(pin);
     if (!session) return;
 
-    const targetSocketId = socket.id === session.senderSocketId 
-      ? session.receiverSocketId 
+    const targetSocketId = socket.id === session.senderSocketId
+      ? session.receiverSocketId
       : session.senderSocketId;
 
     if (targetSocketId) {
@@ -356,7 +356,7 @@ io.on('connection', (socket) => {
   // Handle client disconnect
   socket.on('disconnect', () => {
     console.log(`[Socket] Device disconnected: ${socket.id}`);
-    
+
     // Clean up or reset sessions involving this socket
     for (const [pin, session] of sessions.entries()) {
       if (session.senderSocketId === socket.id) {

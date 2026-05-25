@@ -720,6 +720,13 @@
     });
 
     socket.on('transfer-status', ({ status }) => {
+      if (status === 'cancelled') {
+        if (activeXhr) {
+          try { activeXhr.abort(); } catch (e) {}
+        }
+        handleTransferFailure('Peer cancelled the transfer.');
+        return;
+      }
       if (fallbackActive) {
         if (status === 'accepted') {
           streamFallbackTransmission();
@@ -775,6 +782,13 @@
     });
 
     socket.on('transfer-status', ({ status }) => {
+      if (status === 'cancelled') {
+        if (activeXhr) {
+          try { activeXhr.abort(); } catch (e) {}
+        }
+        handleTransferFailure('Peer cancelled the transfer.');
+        return;
+      }
       if (fallbackActive) {
         if (status === 'accepted') {
           streamFallbackTransmission();
@@ -1144,6 +1158,8 @@
         }, 150);
         
         recordHistoryItem(fileMeta.name, fileMeta.size, 'P2P Direct', 'success');
+      } else if (msg.type === 'transfer-cancelled') {
+        handleTransferFailure('Peer cancelled the transfer.');
       } else if (msg.type === 'transfer-complete') {
         completeTransferSession(true);
       }
@@ -1202,10 +1218,11 @@
     
     cancelTransferBtn.onclick = () => {
       if (isChannelOpen) {
-        dataChannel.send(JSON.stringify({ type: 'transfer-cancelled' }));
-      } else {
-        socket.emit('transfer-status', { pin: activePin, status: 'cancelled' });
+        try {
+          dataChannel.send(JSON.stringify({ type: 'transfer-cancelled' }));
+        } catch (e) {}
       }
+      socket.emit('transfer-status', { pin: activePin, status: 'cancelled' });
       handleTransferFailure('Transfer aborted.');
     };
   }
@@ -1354,6 +1371,7 @@
     let completedDownloads = 0;
     
     function downloadNextFallback(index) {
+      if (!transferInProgress) return;
       if (index >= files.length) {
         completeTransferSession(true);
         return;
@@ -1402,6 +1420,7 @@
      ========================================================================== */
   
   function completeTransferSession(success = true) {
+    if (!transferInProgress) return;
     transferInProgress = false;
     clearInterval(speedInterval);
     
@@ -1427,6 +1446,7 @@
   }
 
   function handleTransferFailure(reason) {
+    if (!transferInProgress) return;
     transferInProgress = false;
     clearInterval(speedInterval);
     showToast('Transfer Failed', reason, 'error');
