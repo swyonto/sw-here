@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SW-HERE | P2P File Sharing</title>
+  
+  <!-- Progressive Web App (PWA) Integration -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#08080a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+
   <!-- Favicon Logo link -->
   <link rel="icon" type="image/png" href="/images/sw-here-logo.png">
   <!-- Google Fonts -->
@@ -42,6 +50,10 @@
       </a>
       
       <div class="header-actions">
+        <!-- PWA Install Button (automatically shown on PWA-supported browsers) -->
+        <button id="pwa-install-btn" class="icon-btn-premium hidden" title="Install Web App">
+          <i class="fa-solid fa-cloud-arrow-down"></i>
+        </button>
         <!-- Download desktop app button (hidden inside Electron, shown on Web browser) -->
         <a href="/download/windows" id="download-desktop-btn" class="icon-btn-premium hidden" title="Download Windows App">
           <i class="fa-solid fa-download"></i>
@@ -501,5 +513,81 @@
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <!-- Main Application Logic Script -->
   <script src="/js/script.js"></script>
+
+  <!-- Progressive Web App (PWA) Handler -->
+  <script>
+    // 1. Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('[PWA] Service Worker registered with scope:', registration.scope);
+          })
+          .catch(error => {
+            console.error('[PWA] Service Worker registration failed:', error);
+          });
+      });
+    }
+
+    // 2. Custom PWA Installation Flow
+    let deferredPrompt;
+    const pwaInstallBtn = document.getElementById('pwa-install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI to notify the user they can install the PWA
+      if (pwaInstallBtn) {
+        pwaInstallBtn.classList.remove('hidden');
+      }
+      
+      console.log('[PWA] App is installable. Revealing custom install button.');
+    });
+
+    if (pwaInstallBtn) {
+      pwaInstallBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        
+        // Show the install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`[PWA] User response to the install prompt: ${outcome}`);
+        
+        // We've used the prompt, so we can't use it again; discard it
+        deferredPrompt = null;
+        // Hide our install button
+        pwaInstallBtn.classList.add('hidden');
+      });
+    }
+
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('[PWA] App successfully installed on system desktop/dashboard.');
+      if (pwaInstallBtn) {
+        pwaInstallBtn.classList.add('hidden');
+      }
+      
+      // Trigger a sleek native-looking success toast notification
+      const toastContainer = document.getElementById('toast-container');
+      if (toastContainer) {
+        const toast = document.createElement('div');
+        toast.className = 'toast success';
+        toast.innerHTML = `
+          <i class="fa-solid fa-circle-check toast-icon"></i>
+          <div class="toast-body">
+            <h4 class="toast-title">PWA Installed Successfully</h4>
+            <p class="toast-message">SW-HERE is now available directly on your desktop/mobile dashboard!</p>
+          </div>
+        `;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.add('removing');
+          setTimeout(() => toast.remove(), 300);
+        }, 5000);
+      }
+    });
+  </script>
 </body>
 </html>

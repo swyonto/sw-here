@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SW-HERE | Share Files Instantly, Anywhere</title>
   <meta name="description" content="SW-HERE is a secure P2P file sharing platform. Send files directly between devices over Wi-Fi or internet — no accounts, no limits, blazing fast.">
+  
+  <!-- Progressive Web App (PWA) Integration -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#07070f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
+
   <link rel="icon" type="image/png" href="/images/sw-here-logo.png">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1050,5 +1058,19 @@
     </div>
   </footer>
 
+  <!-- Progressive Web App (PWA) Handler -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('[PWA] Service Worker registered with scope:', registration.scope);
+          })
+          .catch(error => {
+            console.error('[PWA] Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
